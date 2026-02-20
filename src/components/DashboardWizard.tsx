@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import DashboardTopNav from './DashboardTopNav';
 
 interface UserData {
     id: string;
