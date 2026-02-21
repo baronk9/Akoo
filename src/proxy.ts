@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 import { jwtVerify } from 'jose';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const sessionCookie = request.cookies.get('auth-token');
 
     // Check if the route is protected
