@@ -25,6 +25,7 @@ interface UserData {
 
 export default function DashboardWizard({ user, initialProjectName }: { user: UserData; initialProjectName?: string }) {
     const [currentStep, setCurrentStep] = useState(1);
+    const [maxStepReached, setMaxStepReached] = useState(1);
     const [productId, setProductId] = useState<string | null>(null);
     const [credits, setCredits] = useState(user.credits);
     const [isWorkflowComplete, setIsWorkflowComplete] = useState(false);
@@ -34,21 +35,21 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
 
     const handleFileUploadSuccess = (product: { id: string }) => {
         setProductId(product.id);
-        setCurrentStep(2);
+        setMaxStepReached((prev) => Math.max(prev, 2));
     };
 
     const handleMarketAnalysisComplete = () => {
-        setCurrentStep(3);
+        setMaxStepReached((prev) => Math.max(prev, 3));
     };
 
     const handleProductPageComplete = () => {
         setCredits((prev) => Math.max(0, prev - 1));
-        setCurrentStep(4);
+        setMaxStepReached((prev) => Math.max(prev, 4));
     };
 
     const handleImagePromptsComplete = () => {
         setCredits((prev) => Math.max(0, prev - 1));
-        setCurrentStep(5);
+        setMaxStepReached((prev) => Math.max(prev, 5));
     };
 
     const handleAdCopyComplete = () => {
@@ -129,7 +130,7 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
                     <div className="text-xs font-semibold text-gray-500 mt-4 mb-2 px-2 tracking-wider">WORKFLOW</div>
                     {menuItems.map((item) => {
                         const active = currentStep === item.id;
-                        const accessible = currentStep >= item.id;
+                        const accessible = maxStepReached >= item.id;
                         const Icon = item.icon;
 
                         return (
@@ -148,7 +149,7 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
                             >
                                 <Icon size={18} className={active ? 'text-blue-500' : 'opacity-70'} />
                                 {item.label}
-                                {currentStep > item.id && (
+                                {maxStepReached > item.id && (
                                     <CheckCircle2 size={14} className="ml-auto text-green-500" />
                                 )}
                             </button>
@@ -244,15 +245,16 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
                         </div>
 
                         {currentStep === 1 && (
-                            <FileUpload onUploadSuccess={handleFileUploadSuccess} initialProjectName={initialProjectName} />
+                            <FileUpload onUploadSuccess={handleFileUploadSuccess} initialProjectName={initialProjectName} onNext={() => setCurrentStep(2)} />
                         )}
 
-                        {currentStep >= 2 && productId && (
+                        {maxStepReached >= 2 && productId && (
                             <div className="fade-in">
                                 {currentStep === 2 && (
                                     <MarketAnalysis
                                         productId={productId}
                                         onAnalysisComplete={handleMarketAnalysisComplete}
+                                        onNext={() => setCurrentStep(3)}
                                     />
                                 )}
                                 {currentStep === 3 && (
@@ -260,6 +262,7 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
                                         productId={productId}
                                         credits={credits}
                                         onContentComplete={handleProductPageComplete}
+                                        onNext={() => setCurrentStep(4)}
                                     />
                                 )}
                                 {currentStep === 4 && (
@@ -267,6 +270,7 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
                                         productId={productId}
                                         credits={credits}
                                         onPromptsComplete={handleImagePromptsComplete}
+                                        onNext={() => setCurrentStep(5)}
                                     />
                                 )}
                                 {currentStep === 5 && (

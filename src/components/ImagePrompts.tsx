@@ -10,9 +10,10 @@ interface ImagePromptsProps {
     onPromptsComplete: (text: string) => void;
     existingPrompts?: string | null;
     credits: number;
+    onNext: () => void;
 }
 
-export default function ImagePrompts({ productId, onPromptsComplete, existingPrompts, credits }: ImagePromptsProps) {
+export default function ImagePrompts({ productId, onPromptsComplete, existingPrompts, credits, onNext }: ImagePromptsProps) {
     const [completed, setCompleted] = useState(!!existingPrompts);
     const [showConfirm, setShowConfirm] = useState(false);
     const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
@@ -89,13 +90,21 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
                 )}
 
                 {parsedPrompts.length > 0 && !isLoading && (
-                    <button
-                        onClick={handleCopyAll}
-                        className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
-                    >
-                        {copiedPromptId === 'all' ? <CheckCircle2 size={18} className="text-green-500" /> : <Copy size={18} />}
-                        {copiedPromptId === 'all' ? 'Copied All!' : 'Copy All'}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleCopyAll}
+                            className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
+                        >
+                            {copiedPromptId === 'all' ? <CheckCircle2 size={18} className="text-green-500" /> : <Copy size={18} />}
+                            {copiedPromptId === 'all' ? 'Copied All!' : 'Copy All'}
+                        </button>
+                        <button
+                            onClick={onNext}
+                            className="bg-green-600 hover:bg-green-500 text-white py-2.5 px-5 rounded-xl font-medium shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                        >
+                            Next: Ad Copy →
+                        </button>
+                    </div>
                 )}
             </div>
 

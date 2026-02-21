@@ -9,9 +9,10 @@ interface MarketAnalysisProps {
     productId: string;
     onAnalysisComplete: (analysisText: string) => void;
     existingAnalysis?: string | null;
+    onNext: () => void;
 }
 
-export default function MarketAnalysis({ productId, onAnalysisComplete, existingAnalysis }: MarketAnalysisProps) {
+export default function MarketAnalysis({ productId, onAnalysisComplete, existingAnalysis, onNext }: MarketAnalysisProps) {
     const [completed, setCompleted] = useState(!!existingAnalysis);
 
     const { completion, isLoading, complete } = useCompletion({
@@ -63,12 +64,20 @@ export default function MarketAnalysis({ productId, onAnalysisComplete, existing
                 )}
 
                 {(completed || displayContent) && (
-                    <button
-                        onClick={handleDownload}
-                        className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
-                    >
-                        <Download size={18} /> Download Report
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleDownload}
+                            className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
+                        >
+                            <Download size={18} /> Download Report
+                        </button>
+                        <button
+                            onClick={onNext}
+                            className="bg-green-600 hover:bg-green-500 text-white py-2.5 px-5 rounded-xl font-medium shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                        >
+                            Next: Product Page →
+                        </button>
+                    </div>
                 )}
             </div>
 

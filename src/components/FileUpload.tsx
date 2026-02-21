@@ -8,12 +8,14 @@ import { UploadCloud, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucid
 interface FileUploadProps {
     onUploadSuccess: (product: { id: string; name: string; rawText: string }) => void;
     initialProjectName?: string;
+    onNext: () => void;
 }
 
-export default function FileUpload({ onUploadSuccess, initialProjectName }: FileUploadProps) {
+export default function FileUpload({ onUploadSuccess, initialProjectName, onNext }: FileUploadProps) {
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
 
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
         setError(null);
@@ -68,6 +70,7 @@ export default function FileUpload({ onUploadSuccess, initialProjectName }: File
             }
 
             onUploadSuccess(data.product);
+            setUploadSuccess(true);
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred during upload.');
         } finally {
@@ -159,20 +162,29 @@ export default function FileUpload({ onUploadSuccess, initialProjectName }: File
             </AnimatePresence>
 
             <div className="mt-10 flex justify-center w-full max-w-2xl mx-auto">
-                <button
-                    onClick={handleUpload}
-                    disabled={!file || isUploading}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 px-8 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
-                >
-                    {isUploading ? (
-                        <>
-                            <Loader2 className="animate-spin" size={20} />
-                            Processing...
-                        </>
-                    ) : (
-                        'Confirm & Continue'
-                    )}
-                </button>
+                {uploadSuccess ? (
+                    <button
+                        onClick={onNext}
+                        className="w-full bg-green-600 hover:bg-green-500 text-white font-medium py-3.5 px-8 rounded-xl shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2 text-lg"
+                    >
+                        Next: Market Analysis →
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleUpload}
+                        disabled={!file || isUploading}
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 px-8 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
+                    >
+                        {isUploading ? (
+                            <>
+                                <Loader2 className="animate-spin" size={20} />
+                                Processing...
+                            </>
+                        ) : (
+                            'Confirm & Continue'
+                        )}
+                    </button>
+                )}
             </div>
         </div>
     );

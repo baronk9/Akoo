@@ -10,9 +10,10 @@ interface ProductPageProps {
     onContentComplete: (text: string) => void;
     existingContent?: string | null;
     credits: number;
+    onNext: () => void;
 }
 
-export default function ProductPage({ productId, onContentComplete, existingContent, credits }: ProductPageProps) {
+export default function ProductPage({ productId, onContentComplete, existingContent, credits, onNext }: ProductPageProps) {
     const [completed, setCompleted] = useState(!!existingContent);
     const [showConfirm, setShowConfirm] = useState(false);
 
@@ -68,12 +69,20 @@ export default function ProductPage({ productId, onContentComplete, existingCont
                 )}
 
                 {(completed || displayContent) && (
-                    <button
-                        onClick={handleDownload}
-                        className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
-                    >
-                        <Download size={18} /> Download Copy
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleDownload}
+                            className="bg-white/5 hover:bg-white/10 text-gray-200 py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
+                        >
+                            <Download size={18} /> Download Copy
+                        </button>
+                        <button
+                            onClick={onNext}
+                            className="bg-green-600 hover:bg-green-500 text-white py-2.5 px-5 rounded-xl font-medium shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                        >
+                            Next: Image Prompts →
+                        </button>
+                    </div>
                 )}
             </div>
 
