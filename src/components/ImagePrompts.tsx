@@ -44,10 +44,27 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
 
     const parsePrompts = (text: string) => {
         if (!text) return [];
-        // Split by the delimiter "---" defined in the system prompt
-        const rawSegments = text.split('---');
-        return rawSegments.map((segment, index) => {
-            const match = segment.match(/###\s*(Prompt \d+:.*?)\n([\s\S]*)/);
+
+        // Support for old "---" delimiter format
+        if (text.includes('---')) {
+            const rawSegments = text.split('---');
+            return rawSegments.map((segment, index) => {
+                const match = segment.match(/###\s*(Prompt \d+:.*?)\n([\s\S]*)/);
+                if (match) {
+                    return {
+                        id: `prompt-${index}`,
+                        title: match[1].trim(),
+                        content: match[2].trim()
+                    };
+                }
+                return null;
+            }).filter(Boolean);
+        }
+
+        // Support for new format: "IMAGE 1 — TITLE\nPrompt content"
+        const newSegments = text.split(/(?=IMAGE \d+\s*—\s*[^\n]+)/);
+        return newSegments.map((segment, index) => {
+            const match = segment.match(/(IMAGE \d+\s*—\s*[^\n]+)\n([\s\S]*)/);
             if (match) {
                 return {
                     id: `prompt-${index}`,
