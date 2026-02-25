@@ -139,7 +139,7 @@ export default function Home() {
             { title: 'Smart Market Analysis', icon: Target, desc: 'We analyze the provided content to identify your target demographics, unique selling propositions, and competitive angles.' },
             { title: 'Targeted Ad Copy', icon: MousePointerClick, desc: 'Stop guessing. Generate high-converting Facebook and TikTok ad scripts proven to capture attention and direct clicks.' },
             { title: 'Rapid Generation', icon: Zap, desc: 'Get a completely finished product pipeline in 60 seconds. What used to take hours of manual research is now instantaneous.' },
-            { title: 'Responsive Design Prompts', icon: Layout, desc: 'Create stunning visuals for your product pages with precise Midjourney-optimized image prompts.' },
+            { title: 'Responsive Design Prompts', icon: Layout, desc: 'Create stunning visuals for your product pages with precise Nanobanana pro-optimized image prompts.' },
           ].map((feature, i) => (
             <div key={i} className="bg-[#13111C] border border-white/10 rounded-3xl p-8 hover:border-blue-500/30 transition-all group">
               <div className="flex items-center gap-4 mb-4">

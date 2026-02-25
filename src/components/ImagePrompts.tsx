@@ -105,7 +105,7 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
                         <ImageIcon size={20} className="text-blue-500" />
                         Image Prompts
                     </h2>
-                    <p className="text-gray-400 mt-1">Ready-to-use Midjourney prompts with relevant variations generated.</p>
+                    <p className="text-gray-400 mt-1">Ready-to-use Nanobanana pro prompts with relevant variations generated.</p>
                 </div>
 
                 {!displayContent && !isLoading && !showConfirm && (
@@ -163,8 +163,8 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
                 <div className="bg-blue-500/10 border border-blue-500/20 p-5 rounded-xl flex items-start gap-4 mb-6">
                     <Info className="text-blue-400 shrink-0 mt-0.5" />
                     <div className="text-sm text-gray-300">
-                        <p className="font-semibold mb-1 text-white">Midjourney Best Practices</p>
-                        <p className="text-gray-400 leading-relaxed">Copy each of the prompts below directly into Midjourney, Discord bot or other capable text-to-image generator tool to achieve the most accurate representation of the desired output based on your product variables.</p>
+                        <p className="font-semibold mb-1 text-white">Nanobanana pro Best Practices</p>
+                        <p className="text-gray-400 leading-relaxed">Copy each of the prompts below directly into Nanobanana pro, Discord bot or other capable text-to-image generator tool to achieve the most accurate representation of the desired output based on your product variables.</p>
                     </div>
                 </div>
             )}
