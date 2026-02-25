@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Search, Moon, Sun, Bell, Settings, FileText, ArrowLeft, FolderOpen, Calendar, Package } from 'lucide-react';
+import { LogOut, Search, Moon, Sun, Bell, Settings, FileText, ArrowLeft, FolderOpen, Calendar, Package, Trash2, Loader2 } from 'lucide-react';
 import DashboardTopNav from './DashboardTopNav';
 
 interface Product {
@@ -23,6 +23,7 @@ interface UserData {
 export default function ProductsDashboard({ user }: { user: UserData }) {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -42,6 +43,34 @@ export default function ProductsDashboard({ user }: { user: UserData }) {
 
         fetchProducts();
     }, []);
+
+    const handleDeleteProduct = async (productId: string, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+            return;
+        }
+
+        setDeletingId(productId);
+        try {
+            const res = await fetch(`/api/products/${productId}`, {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
+            } else {
+                console.error("Failed to delete product");
+                alert("Failed to delete product. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error deleting product", error);
+            alert("An error occurred while deleting the product.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -133,6 +162,14 @@ export default function ProductsDashboard({ user }: { user: UserData }) {
                                                 <div className="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-400">
                                                     <Package size={24} />
                                                 </div>
+                                                <button
+                                                    onClick={(e) => handleDeleteProduct(product.id, e)}
+                                                    disabled={deletingId === product.id}
+                                                    className="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                                                    title="Delete Product"
+                                                >
+                                                    {deletingId === product.id ? <Loader2 size={18} className="animate-spin text-red-400" /> : <Trash2 size={18} />}
+                                                </button>
                                             </div>
                                             <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
                                                 {product.name || 'Untitled Product'}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Moon, Sun, Bell, Settings, LogOut, User } from 'lucide-react';
+import { Moon, Sun, Bell, Settings, LogOut, User, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface UserData {
@@ -156,6 +156,11 @@ export default function DashboardTopNav({ user, children, rightContent }: { user
                                 <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2">
                                     <Settings size={14} /> Preferences
                                 </button>
+                                {user?.role === 'ADMIN' && (
+                                    <button onClick={() => router.push('/admin')} className="w-full text-left px-4 py-2 text-sm text-purple-400 hover:bg-white/5 hover:text-purple-300 transition-colors flex items-center gap-2 mt-1 border-t border-white/5 pt-3">
+                                        <Shield size={14} /> Admin Panel
+                                    </button>
+                                )}
                             </div>
                             <div className="px-3 py-2 border-t border-white/5">
                                 <button

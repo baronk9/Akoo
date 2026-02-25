@@ -62,3 +62,28 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const session = await getSession();
+        if (!session || !session.userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const resolvedParams = await params;
+
+        // Try to delete the product, ensuring the user owns it
+        await prisma.product.delete({
+            where: {
+                id: resolvedParams.id,
+                userId: session.userId as string,
+            },
+        });
+
+        return NextResponse.json({ success: true, message: 'Product deleted successfully' });
+    } catch (error) {
+        // Prisma throws an error if the record to delete does not exist (e.g. invalid ID or wrong user)
+        console.error('Failed to delete product:', error);
+        return NextResponse.json({ error: 'Failed to delete product or product not found' }, { status: 500 });
+    }
+}

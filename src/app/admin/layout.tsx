@@ -1,12 +1,20 @@
 import React from 'react';
 import Link from 'next/link';
-import { Shield, Users, LayoutDashboard, LogOut } from 'lucide-react';
+import { Shield, Users, LayoutDashboard, LogOut, Package } from 'lucide-react';
+import { getSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const session = await getSession();
+
+    if (!session || session.role !== 'ADMIN') {
+        redirect('/dashboard');
+    }
+
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-zinc-900">
             {/* Sidebar */}
@@ -19,9 +27,13 @@ export default function AdminLayout({
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1">
-                    <Link href="/admin" className="flex items-center px-4 py-3 text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-zinc-700 rounded-lg">
+                    <Link href="/admin" className="flex items-center px-4 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg transition-colors">
                         <Users className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
                         Users
+                    </Link>
+                    <Link href="/admin/products" className="flex items-center px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors">
+                        <Package className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                        System Products
                     </Link>
                     <Link href="/dashboard" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700 hover:text-gray-900 dark:hover:text-white rounded-lg">
                         <LayoutDashboard className="w-5 h-5 mr-3 text-gray-400" />

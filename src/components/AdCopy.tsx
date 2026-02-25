@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useCompletion } from '@ai-sdk/react';
 import { Loader2, Download, Megaphone, Copy, Play, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface AdCopyProps {
     productId: string;
@@ -93,20 +94,23 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
                 )}
 
                 {(completed || displayContent) && (
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => complete('')}
-                            disabled={isLoading}
-                            className="bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 py-2.5 px-5 rounded-xl font-medium transition-all"
-                        >
-                            Regenerate
-                        </button>
-                        <button
-                            onClick={handleDownloadAll}
-                            className="bg-white/5 hover:bg-white/10 text-white py-2.5 px-5 rounded-xl font-medium transition-all flex items-center gap-2 border border-white/10"
-                        >
-                            <Download size={18} /> Download All
-                        </button>
+                    <div className="flex flex-col items-end gap-2">
+                        <span className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-1">Step 5 of 5</span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => complete('')}
+                                disabled={isLoading}
+                                className="bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 py-2.5 px-5 rounded-xl text-sm font-medium transition-all"
+                            >
+                                Regenerate
+                            </button>
+                            <button
+                                onClick={handleDownloadAll}
+                                className="bg-white/5 hover:bg-white/10 text-white py-2.5 px-5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border border-white/10"
+                            >
+                                <Download size={16} /> Download All
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
@@ -140,13 +144,13 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
                         {parsedAds.length > 0 ? (
                             parsedAds.map((ad: any) => (
                                 <div key={ad.id} className="bg-[#13111C] border border-white/5 shadow-inner rounded-2xl overflow-hidden hover:border-blue-500/30 transition-colors flex flex-col">
-                                    <div className="bg-white/5 px-5 py-4 border-b border-white/5 flex justify-between items-center">
+                                    <div className="bg-[#181622]/30 px-5 py-4 border-b border-white/5 flex justify-between items-center">
                                         <span className="font-semibold text-white text-sm">
                                             {ad.title}
                                         </span>
                                         <button
                                             onClick={() => handleCopy(ad.raw, ad.id)}
-                                            className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 hover:bg-white/10"
+                                            className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10"
                                         >
                                             {copiedId === ad.id ? <CheckCircle2 size={14} className="text-green-500" /> : <Copy size={14} />}
                                             {copiedId === ad.id ? 'Copied' : 'Copy'}
@@ -172,8 +176,43 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-1 md:col-span-2 bg-[#13111C] p-8 rounded-2xl border border-white/5 whitespace-pre-wrap font-sans text-gray-300 text-sm leading-relaxed custom-scrollbar max-h-[600px] overflow-y-auto shadow-inner">
-                                {displayContent}
+                            <div className="col-span-1 md:col-span-2 bg-[#13111C] p-8 rounded-2xl border border-white/5 font-sans text-gray-200 text-sm leading-relaxed custom-scrollbar max-h-[600px] overflow-y-auto shadow-inner">
+                                <ReactMarkdown
+                                    components={{
+                                        h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-white mt-6 mb-3 border-b border-white/10 pb-2" {...props} />,
+                                        h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-6 mb-3" {...props} />,
+                                        h3: ({ node, ...props }) => {
+                                            const text = String(props.children);
+                                            const match = text.match(/^(\d+)\.?\s+(.*)$/);
+                                            if (match) {
+                                                return (
+                                                    <h3 className="flex items-center gap-2 text-base font-semibold text-white mt-6 mb-3 tracking-wide uppercase">
+                                                        <span className="bg-blue-600 text-white w-5 h-5 rounded flex items-center justify-center text-xs font-bold shadow-sm shadow-blue-500/20">
+                                                            {match[1]}
+                                                        </span>
+                                                        {match[2]}
+                                                    </h3>
+                                                );
+                                            }
+                                            return <h3 className="text-base font-semibold text-white mt-5 mb-2" {...props} />;
+                                        },
+                                        h4: ({ node, ...props }) => <h4 className="font-semibold text-gray-200 mt-4 mb-2" {...props} />,
+                                        ul: ({ node, ...props }) => <ul className="list-disc pl-5 space-y-1 mb-4 text-gray-300 marker:text-gray-500" {...props} />,
+                                        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 space-y-1 mb-4 text-gray-300 marker:text-gray-500" {...props} />,
+                                        li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+                                        p: ({ node, ...props }) => <p className="mb-3 leading-relaxed" {...props} />,
+                                        strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-blue-500 pl-3 italic text-gray-400 my-3" {...props} />,
+                                        code: ({ node, className, ...props }) => {
+                                            const isInline = !className;
+                                            return isInline ?
+                                                <code className="bg-white/10 text-gray-300 px-1 py-0.5 rounded text-xs font-medium" {...props} /> :
+                                                <code className="block bg-white/5 p-3 rounded-xl text-xs overflow-x-auto whitespace-pre my-3" {...props} />;
+                                        }
+                                    }}
+                                >
+                                    {displayContent}
+                                </ReactMarkdown>
                             </div>
                         )}
 

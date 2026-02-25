@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useCompletion } from '@ai-sdk/react';
 import { Loader2, Download, Play, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface MarketAnalysisProps {
     productId: string;
@@ -101,8 +102,43 @@ export default function MarketAnalysis({ productId, onAnalysisComplete, existing
                         animate={{ opacity: 1, y: 0 }}
                         className="prose prose-blue max-w-none w-full"
                     >
-                        <div className="bg-[#13111C] p-8 rounded-2xl border border-white/5 max-h-[600px] overflow-y-auto whitespace-pre-wrap font-sans text-gray-200 leading-relaxed custom-scrollbar shadow-inner">
-                            {displayContent}
+                        <div className="bg-[#13111C] p-8 rounded-2xl border border-white/5 max-h-[600px] overflow-y-auto font-sans text-gray-200 leading-relaxed custom-scrollbar shadow-inner">
+                            <ReactMarkdown
+                                components={{
+                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2" {...props} />,
+                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-white mt-8 mb-4" {...props} />,
+                                    h3: ({ node, ...props }) => {
+                                        const text = String(props.children);
+                                        const match = text.match(/^(\d+)\.?\s+(.*)$/);
+                                        if (match) {
+                                            return (
+                                                <h3 className="flex items-center gap-3 text-lg font-semibold text-white mt-8 mb-4 tracking-wide uppercase">
+                                                    <span className="bg-blue-600 text-white w-6 h-6 rounded flex items-center justify-center text-sm font-bold shadow-sm shadow-blue-500/20">
+                                                        {match[1]}
+                                                    </span>
+                                                    {match[2]}
+                                                </h3>
+                                            );
+                                        }
+                                        return <h3 className="text-lg font-semibold text-white mt-6 mb-3" {...props} />;
+                                    },
+                                    h4: ({ node, ...props }) => <h4 className="text-base font-semibold text-gray-200 mt-4 mb-2" {...props} />,
+                                    ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-300 marker:text-gray-500" {...props} />,
+                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-300 marker:text-gray-500" {...props} />,
+                                    li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+                                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
+                                    strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-blue-500 pl-4 italic text-gray-400 my-4" {...props} />,
+                                    code: ({ node, className, ...props }) => {
+                                        const isInline = !className;
+                                        return isInline ?
+                                            <code className="bg-white/10 text-gray-300 px-1.5 py-0.5 rounded text-xs font-medium" {...props} /> :
+                                            <code className="block bg-white/5 p-4 rounded-xl text-sm overflow-x-auto whitespace-pre my-4" {...props} />;
+                                    }
+                                }}
+                            >
+                                {displayContent}
+                            </ReactMarkdown>
                         </div>
 
                         {isLoading && (
