@@ -18,6 +18,8 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
     const [completed, setCompleted] = useState(!!existingPrompts);
     const [showConfirm, setShowConfirm] = useState(false);
     const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
+    const [generatingImages, setGeneratingImages] = useState<Record<string, boolean>>({});
+    const [generatedImages, setGeneratedImages] = useState<Record<string, string>>({});
 
     const { completion, isLoading, complete, error } = useCompletion({
         api: '/api/image-prompts',
@@ -93,6 +95,24 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
             const strippedText = displayContent.replace(/---/g, '\n\n');
             handleCopy(strippedText, 'all');
         }
+    };
+
+    const handleGenerateImage = (id: string, promptContent: string) => {
+        setGeneratingImages(prev => ({ ...prev, [id]: true }));
+        // Clean up prompt content to remove markdown formatting
+        const cleanPrompt = promptContent.replace(/\*\*/g, '').replace(/\n/g, ' ').substring(0, 800);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=1024&height=1024&nologo=true&seed=${Math.random()}`;
+
+        const img = new Image();
+        img.onload = () => {
+            setGeneratedImages(prev => ({ ...prev, [id]: imageUrl }));
+            setGeneratingImages(prev => ({ ...prev, [id]: false }));
+        };
+        img.onerror = () => {
+            alert("Nano Banana Pro encountered an error. Please try again.");
+            setGeneratingImages(prev => ({ ...prev, [id]: false }));
+        };
+        img.src = imageUrl;
     };
 
     const parsedPrompts = parsePrompts(displayContent);
@@ -208,6 +228,49 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
                                     <div className="p-6 text-gray-300 font-mono text-sm leading-relaxed whitespace-pre-wrap">
                                         {prompt.content}
                                     </div>
+                                    <div className="bg-[#181622]/30 px-6 py-4 border-t border-white/5 flex gap-4 items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <button
+                                                onClick={() => handleGenerateImage(prompt.id, prompt.content)}
+                                                disabled={generatingImages[prompt.id]}
+                                                className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-purple-500/20 transition-all flex items-center gap-2"
+                                            >
+                                                {generatingImages[prompt.id] ? (
+                                                    <><Loader2 size={16} className="animate-spin" /> Nano Banana Pro is working...</>
+                                                ) : (
+                                                    <><ImageIcon size={16} /> Generate Image</>
+                                                )}
+                                            </button>
+                                            {generatingImages[prompt.id] && (
+                                                <span className="text-sm text-purple-400 animate-pulse font-medium">Brewing high-res image...</span>
+                                            )}
+                                        </div>
+                                        {generatedImages[prompt.id] && (
+                                            <button
+                                                onClick={() => {
+                                                    const a = document.createElement('a');
+                                                    a.href = generatedImages[prompt.id];
+                                                    a.download = `${prompt.id}-nanobananapro.jpg`;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    document.body.removeChild(a);
+                                                }}
+                                                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium bg-white/5 px-4 py-2 rounded-xl border border-white/10 hover:bg-white/10"
+                                            >
+                                                <Download size={16} /> Save Image
+                                            </button>
+                                        )}
+                                    </div>
+                                    {generatedImages[prompt.id] && (
+                                        <div className="border-t border-white/5 p-6 bg-black/40 flex justify-center">
+                                            <img
+                                                src={generatedImages[prompt.id]}
+                                                alt={prompt.title}
+                                                className="max-w-full lg:max-w-2xl h-auto rounded-2xl border border-white/10 shadow-2xl"
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         ) : (
