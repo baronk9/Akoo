@@ -40,6 +40,37 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
         }
     };
 
+    const markdownComponents = {
+        h1: ({ node, ...props }: any) => <h1 className="text-xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2 font-sans" {...props} />,
+        h2: ({ node, ...props }: any) => <h2 className="text-lg font-bold text-white mt-8 mb-4 font-sans" {...props} />,
+        h3: ({ node, ...props }: any) => {
+            const text = String(props.children);
+            const match = text.match(/^(\d+)\.?\s+(.*)$/);
+            if (match) {
+                return (
+                    <h3 className="flex items-center gap-2 text-base font-semibold text-white mt-6 mb-3 tracking-wide uppercase font-sans">
+                        <span className="bg-blue-600 text-white w-6 h-6 rounded flex items-center justify-center text-xs font-bold shadow-sm shadow-blue-500/20">
+                            {match[1]}
+                        </span>
+                        {match[2]}
+                    </h3>
+                );
+            }
+            return <h3 className="text-base font-semibold text-white mt-6 mb-3 font-sans" {...props} />;
+        },
+        p: ({ node, ...props }: any) => <p className="mb-4 leading-relaxed text-gray-300" {...props} />,
+        ul: ({ node, ...props }: any) => <ul className="space-y-2 mb-6 text-gray-300 list-disc ml-5 marker:text-blue-500" {...props} />,
+        ol: ({ node, ...props }: any) => <ol className="space-y-2 mb-6 text-gray-300 list-decimal ml-5 marker:text-blue-500 font-semibold" {...props} />,
+        li: ({ node, ...props }: any) => <li className="pl-1" {...props} />,
+        code: ({ node, className, ...props }: any) => {
+            const isInline = !className;
+            return isInline ?
+                <code className="bg-white/10 text-gray-300 px-1.5 py-0.5 rounded text-xs font-medium font-mono" {...props} /> :
+                <code className="block bg-white/5 p-4 rounded-xl text-sm overflow-x-auto whitespace-pre my-4 font-mono text-gray-300 border border-white/5" {...props} />;
+        },
+        strong: ({ node, ...props }: any) => <strong className="font-semibold text-white" {...props} />
+    };
+
     return (
         <div className="min-h-screen bg-[#13111C] flex text-gray-100 font-sans">
             {/* Sidebar */}
@@ -127,8 +158,8 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
                             <div className="animate-in fade-in duration-300">
                                 <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Market Analysis</h2>
                                 {product.marketAnalysis ? (
-                                    <div className="prose prose-invert max-w-none text-gray-300">
-                                        <ReactMarkdown>{product.marketAnalysis}</ReactMarkdown>
+                                    <div className="text-gray-300">
+                                        <ReactMarkdown components={markdownComponents}>{product.marketAnalysis}</ReactMarkdown>
                                     </div>
                                 ) : (
                                     <p className="text-gray-500 italic">No market analysis generated for this product.</p>
@@ -140,8 +171,8 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
                             <div className="animate-in fade-in duration-300">
                                 <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Product Page Copy</h2>
                                 {product.productPageContent ? (
-                                    <div className="prose prose-invert max-w-none text-gray-300">
-                                        <ReactMarkdown>{product.productPageContent}</ReactMarkdown>
+                                    <div className="text-gray-300">
+                                        <ReactMarkdown components={markdownComponents}>{product.productPageContent}</ReactMarkdown>
                                     </div>
                                 ) : (
                                     <p className="text-gray-500 italic">No product page copy generated for this product.</p>
@@ -153,8 +184,8 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
                             <div className="animate-in fade-in duration-300">
                                 <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Image Generation Prompts</h2>
                                 {product.imagePrompts ? (
-                                    <div className="bg-[#13111C] p-6 rounded-xl border border-white/5 whitespace-pre-wrap font-mono text-sm text-gray-300">
-                                        {product.imagePrompts}
+                                    <div className="text-gray-300">
+                                        <ReactMarkdown components={markdownComponents}>{product.imagePrompts}</ReactMarkdown>
                                     </div>
                                 ) : (
                                     <p className="text-gray-500 italic">No image prompts generated for this product.</p>
@@ -166,8 +197,8 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
                             <div className="animate-in fade-in duration-300">
                                 <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Ad Copy (Facebook & Instagram)</h2>
                                 {product.adCopy ? (
-                                    <div className="bg-[#13111C] p-6 rounded-xl border border-white/5 whitespace-pre-wrap font-mono text-sm text-gray-300">
-                                        {product.adCopy}
+                                    <div className="text-gray-300">
+                                        <ReactMarkdown components={markdownComponents}>{product.adCopy}</ReactMarkdown>
                                     </div>
                                 ) : (
                                     <p className="text-gray-500 italic">No ad copy generated for this product.</p>
