@@ -20,9 +20,20 @@ export default function MarketAnalysis({ productId, onAnalysisComplete, existing
         api: '/api/market-analysis',
         streamProtocol: 'text',
         body: { productId },
-        onFinish: (prompt, completion) => {
+        onFinish: async (prompt, completion) => {
             setCompleted(true);
             onAnalysisComplete(completion);
+
+            // Save from client to ensure Vercel doesn't kill the background process
+            try {
+                await fetch(`/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marketAnalysis: completion }),
+                });
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
         },
         onError: (error) => {
             console.error('Market analysis error:', error);

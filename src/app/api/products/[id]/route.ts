@@ -38,22 +38,28 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { name } = await req.json();
-
-        if (!name) {
-            return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-        }
+        const { name, marketAnalysis, productPageContent, imagePrompts, adCopy } = await req.json();
 
         const resolvedParams = await params;
+
+        // Build the update data dynamically based on what was provided
+        const updateData: any = {};
+        if (name !== undefined) updateData.name = name;
+        if (marketAnalysis !== undefined) updateData.marketAnalysis = marketAnalysis;
+        if (productPageContent !== undefined) updateData.productPageContent = productPageContent;
+        if (imagePrompts !== undefined) updateData.imagePrompts = imagePrompts;
+        if (adCopy !== undefined) updateData.adCopy = adCopy;
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ error: 'No data provided to update' }, { status: 400 });
+        }
 
         const product = await prisma.product.update({
             where: {
                 id: resolvedParams.id,
                 userId: session.userId as string, // Ensure user owns the product
             },
-            data: {
-                name,
-            },
+            data: updateData,
         });
 
         return NextResponse.json({ product });

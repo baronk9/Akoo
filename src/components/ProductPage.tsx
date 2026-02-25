@@ -22,9 +22,20 @@ export default function ProductPage({ productId, onContentComplete, existingCont
         api: '/api/product-page',
         streamProtocol: 'text',
         body: { productId },
-        onFinish: (prompt, completion) => {
+        onFinish: async (prompt, completion) => {
             setCompleted(true);
             onContentComplete(completion);
+
+            // Save from client to ensure Vercel doesn't kill the background process
+            try {
+                await fetch(`/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productPageContent: completion }),
+                });
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
         },
     });
 

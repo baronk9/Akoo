@@ -20,9 +20,20 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
         api: '/api/ad-copy',
         streamProtocol: 'text',
         body: { productId },
-        onFinish: (prompt, completion) => {
+        onFinish: async (prompt, completion) => {
             setCompleted(true);
             onAdCopyComplete(completion);
+
+            // Save from client to ensure Vercel doesn't kill the background process
+            try {
+                await fetch(`/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adCopy: completion }),
+                });
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
         },
     });
 

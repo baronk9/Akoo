@@ -23,9 +23,20 @@ export default function ImagePrompts({ productId, onPromptsComplete, existingPro
         api: '/api/image-prompts',
         streamProtocol: 'text',
         body: { productId },
-        onFinish: (prompt, completion) => {
+        onFinish: async (prompt, completion) => {
             setCompleted(true);
             onPromptsComplete(completion);
+
+            // Save from client to ensure Vercel doesn't kill the background process
+            try {
+                await fetch(`/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imagePrompts: completion }),
+                });
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
         },
     });
 
