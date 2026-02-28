@@ -31,10 +31,12 @@ model Product {
   user               User     @relation(fields: [userId], references: [id])
   name               String   @default("Untitled Product")
   rawText            String   @db.Text
+  imageBase64        String?  @db.Text
   marketAnalysis     String?  @db.Text
   productPageContent String?  @db.Text
   imagePrompts       String?  @db.Text
   adCopy             String?  @db.Text
+  generatedImages    Json?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }

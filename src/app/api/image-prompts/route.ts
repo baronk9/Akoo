@@ -317,7 +317,15 @@ IMAGE 6 — COMPARISON
         const result = streamText({
             model: google('gemini-2.5-pro'),
             system: systemPrompt,
-            prompt: `Product Information:\n${product.rawText}\n\nMarket Analysis:\n${product.marketAnalysis}\n\nProduct Page Copy:\n${product.productPageContent || 'Not provided'}`,
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: `Product Information:\n${product.rawText}\n\nMarket Analysis:\n${product.marketAnalysis}\n\nProduct Page Copy:\n${product.productPageContent || 'Not provided'}` },
+                        ...(product.imageBase64 ? [{ type: 'image' as const, image: product.imageBase64 }] : [])
+                    ]
+                }
+            ],
             onFinish: async ({ text }) => {
                 try {
                     await prisma.product.update({

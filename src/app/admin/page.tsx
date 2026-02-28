@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ShieldAlert, MoreVertical, Edit2, Save, X } from 'lucide-react';
+import { ShieldAlert, Edit2, Save, X } from 'lucide-react';
 
 interface User {
     id: string;
@@ -32,8 +32,12 @@ export default function AdminUsersPage() {
             if (!res.ok) throw new Error('Failed to load users');
             const data = await res.json();
             setUsers(data.users);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred');
+            }
         } finally {
             setLoading(false);
         }
@@ -62,8 +66,12 @@ export default function AdminUsersPage() {
             const data = await res.json();
             setUsers(users.map(u => u.id === userId ? { ...u, role: data.user.role, credits: data.user.credits } : u));
             setEditingId(null);
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                alert(err.message);
+            } else {
+                alert('An unknown error occurred');
+            }
         }
     };
 

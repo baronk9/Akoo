@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Shield, Users, LayoutDashboard, LogOut, Package } from 'lucide-react';
+import { Shield, Users, LayoutDashboard, Package } from 'lucide-react';
 import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 

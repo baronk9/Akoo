@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Search, Moon, Sun, Bell, Settings, FileText, ArrowLeft, FolderOpen, Calendar, Package, Trash2, Loader2 } from 'lucide-react';
+import { LogOut, Search, ArrowLeft, FolderOpen, Calendar, Package, Trash2, Loader2 } from 'lucide-react';
 import DashboardTopNav from './DashboardTopNav';
 
 interface Product {
@@ -18,6 +18,7 @@ interface UserData {
     email: string;
     credits: number;
     role?: string;
+    [key: string]: unknown;
 }
 
 export default function ProductsDashboard({ user }: { user: UserData }) {
@@ -128,7 +129,7 @@ export default function ProductsDashboard({ user }: { user: UserData }) {
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 bg-[#0B0A0F]">
-                <DashboardTopNav user={user as any}>
+                <DashboardTopNav user={user}>
                     <div className="relative w-96">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input

@@ -10,50 +10,68 @@ export async function POST(req: Request) {
         }
 
         const formData = await req.formData();
-        const file = formData.get('file') as File | null;
+        const files = formData.getAll('files') as File[];
 
-        if (!file) {
-            return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+        if (!files || files.length === 0) {
+            return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
         }
 
-        const isPdf = file.name.toLowerCase().endsWith('.pdf');
+        let combinedText = '';
+        let imageBase64: string | null = null;
+        let mainFileName = files[0].name;
 
-        if (!file.name.toLowerCase().endsWith('.txt') && !isPdf) {
-            return NextResponse.json({ error: 'Only .txt and .pdf files are accepted' }, { status: 400 });
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'File is too large. Maximum size is 5MB.' }, { status: 400 });
-        }
-
-        let text = '';
-
-        if (isPdf) {
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const buffer = Buffer.from(arrayBuffer);
-
-                text = await new Promise((resolve, reject) => {
-                    const PDFParser = require("pdf2json");
-                    const pdfParser = new PDFParser(null, 1);
-
-                    pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
-                    pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
-                        resolve(pdfParser.getRawTextContent().replace(/\\r\\n/g, ' '));
-                    });
-
-                    pdfParser.parseBuffer(buffer);
-                });
-            } catch (pdfError) {
-                console.error('PDF parsing error:', pdfError);
-                return NextResponse.json({ error: 'Failed to extract text from PDF file.' }, { status: 400 });
+        for (const file of files) {
+            if (file.size > 50 * 1024 * 1024) {
+                return NextResponse.json({ error: `File ${file.name} is too large. Maximum size is 50MB.` }, { status: 400 });
             }
-        } else {
-            text = await file.text();
+
+            const isPdf = file.name.toLowerCase().endsWith('.pdf');
+            const isTxt = file.name.toLowerCase().endsWith('.txt');
+            const isImage = file.type.startsWith('image/');
+
+            if (!isPdf && !isTxt && !isImage) {
+                return NextResponse.json({ error: `File ${file.name} has an invalid type. Only .txt, .pdf, and images are accepted.` }, { status: 400 });
+            }
+
+            if (isImage) {
+                const arrayBuffer = await file.arrayBuffer();
+                const base64 = Buffer.from(arrayBuffer).toString('base64');
+                imageBase64 = `data:${file.type};base64,${base64}`;
+                // Set main filename to image if no text file provided yet, else keep the text file's name
+                if (!combinedText) mainFileName = file.name;
+            } else if (isPdf) {
+                mainFileName = file.name;
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const buffer = Buffer.from(arrayBuffer);
+
+                    const text = await new Promise<string>((resolve, reject) => {
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports
+                        const PDFParser = require("pdf2json");
+                        const pdfParser = new PDFParser(null, 1);
+
+                        pdfParser.on("pdfParser_dataError", (errData: { parserError: Error }) => reject(errData.parserError));
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        pdfParser.on("pdfParser_dataReady", (pdfData: unknown) => {
+                            resolve(pdfParser.getRawTextContent().replace(/\r\n/g, ' '));
+                        });
+
+                        pdfParser.parseBuffer(buffer);
+                    });
+                    combinedText += `\n${text}`;
+                } catch (pdfError) {
+                    console.error('PDF parsing error:', pdfError);
+                    return NextResponse.json({ error: `Failed to extract text from PDF file ${file.name}.` }, { status: 400 });
+                }
+            } else if (isTxt) {
+                mainFileName = file.name;
+                const text = await file.text();
+                combinedText += `\n${text}`;
+            }
         }
 
-        if (!text.trim()) {
-            return NextResponse.json({ error: 'Your file appears to be empty or unscannable. Please add product details.' }, { status: 400 });
+        if (!combinedText.trim() && !imageBase64) {
+            return NextResponse.json({ error: 'Files appear to be empty or unscannable.' }, { status: 400 });
         }
 
         // Use explicit projectName if provided, otherwise fallback to first line or filename
@@ -63,15 +81,16 @@ export async function POST(req: Request) {
         if (explicitName && explicitName.trim()) {
             finalName = explicitName.trim();
         } else {
-            const firstLine = text.trim().split('\n')[0].trim();
-            finalName = firstLine.length > 0 && firstLine.length < 50 ? firstLine : file.name.replace(/\.(txt|pdf)$/i, '');
+            const firstLine = combinedText.trim().split('\n')[0].trim();
+            finalName = firstLine.length > 0 && firstLine.length < 50 ? firstLine : mainFileName.replace(/\.(txt|pdf|png|jpg|jpeg|webp)$/i, '');
         }
 
         const product = await prisma.product.create({
             data: {
                 userId: session.userId as string,
                 name: finalName,
-                rawText: text,
+                rawText: combinedText.trim(),
+                imageBase64: imageBase64,
             },
         });
 

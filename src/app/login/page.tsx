@@ -32,8 +32,12 @@ export default function Login() {
 
             router.push('/dashboard');
             router.refresh();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
         } finally {
             setLoading(false);
         }
@@ -90,7 +94,7 @@ export default function Login() {
                 </form>
                 <div className="mt-6 text-center">
                     <Link href="/register" className="text-primary-600 hover:text-primary-800 font-medium text-sm transition-colors">
-                        Don't have an account? Sign up
+                        Don&apos;t have an account? Sign up
                     </Link>
                 </div>
             </div>

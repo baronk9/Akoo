@@ -7,10 +7,9 @@ import ProductPage from './ProductPage';
 import ImagePrompts from './ImagePrompts';
 import AdCopy from './AdCopy';
 import {
-    CreditCard, LogOut, CheckCircle2, Shield,
-    Search, Moon, Sun, Bell, Settings,
-    LayoutDashboard, FileText, Image as ImageIcon,
-    Target, LineChart, FileUp, Save, Loader2, FolderOpen
+    LogOut, CheckCircle2, Search,
+    FileText, Image as ImageIcon,
+    Target, LineChart, FileUp, Loader2, FolderOpen
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -21,6 +20,7 @@ interface UserData {
     email: string;
     credits: number;
     role?: string;
+    [key: string]: unknown;
 }
 
 export default function DashboardWizard({ user, initialProjectName }: { user: UserData; initialProjectName?: string }) {
@@ -187,7 +187,7 @@ export default function DashboardWizard({ user, initialProjectName }: { user: Us
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 bg-[#0B0A0F]">
                 {/* Top Header */}
-                <DashboardTopNav user={user as any}>
+                <DashboardTopNav user={user}>
                     <div className="flex items-center gap-6">
                         <Link href="/dashboard" className="text-sm font-medium text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
                             <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Dashboard

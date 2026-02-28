@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Sparkles, Moon, Sun, Bell, Settings, LogOut, Search,
-    ArrowRight, Target, LayoutDashboard, FileText, ImageIcon, FileUp, Plus
+    Sparkles, LogOut, Search,
+    ArrowRight, Target, LayoutDashboard, Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ interface UserData {
     email: string;
     credits: number;
     role?: string;
+    [key: string]: unknown;
 }
 
 interface Product {
@@ -121,7 +122,7 @@ export default function DashboardHome({ user }: { user: UserData }) {
             <main className="flex-1 flex flex-col min-w-0 ml-64 relative">
 
                 {/* Top Header */}
-                <DashboardTopNav user={user as any}>
+                <DashboardTopNav user={user}>
                     <div className="relative w-96">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input
@@ -246,7 +247,7 @@ export default function DashboardHome({ user }: { user: UserData }) {
 }
 
 // Importing FolderOpen explicitly as a fallback for standard icon imports above
-function FolderOpen(props: any) {
+function FolderOpen(props: React.SVGProps<SVGSVGElement> & { size?: number | string }) {
     return (
         <svg
             {...props}

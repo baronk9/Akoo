@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Search, Moon, Sun, Bell, Settings, FileText, ArrowLeft, FolderOpen, Target, ImageIcon as ImageIcon2, LineChart, Package, Calendar } from 'lucide-react';
+import { LogOut, Search, FileText, ArrowLeft, FolderOpen, Target, ImageIcon as ImageIcon2, LineChart, Package, Calendar } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import DashboardTopNav from './DashboardTopNav';
+import ImagePrompts from './ImagePrompts';
 
 interface ProductDetail {
     id: string;
@@ -23,6 +24,7 @@ interface UserData {
     email: string;
     credits: number;
     role?: string;
+    [key: string]: unknown;
 }
 
 export default function ProductDetailDashboard({ user, product }: { user: UserData, product: ProductDetail }) {
@@ -40,10 +42,11 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
         }
     };
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const markdownComponents = {
-        h1: ({ node, ...props }: any) => <h1 className="text-xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2 font-sans" {...props} />,
-        h2: ({ node, ...props }: any) => <h2 className="text-lg font-bold text-white mt-8 mb-4 font-sans" {...props} />,
-        h3: ({ node, ...props }: any) => {
+        h1: ({ node, ...props }: React.ComponentPropsWithoutRef<'h1'> & { node?: unknown }) => <h1 className="text-xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2 font-sans" {...props} />,
+        h2: ({ node, ...props }: React.ComponentPropsWithoutRef<'h2'> & { node?: unknown }) => <h2 className="text-lg font-bold text-white mt-8 mb-4 font-sans" {...props} />,
+        h3: ({ node, ...props }: React.ComponentPropsWithoutRef<'h3'> & { node?: unknown }) => {
             const text = String(props.children);
             const match = text.match(/^(\d+)\.?\s+(.*)$/);
             if (match) {
@@ -58,18 +61,19 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
             }
             return <h3 className="text-base font-semibold text-white mt-6 mb-3 font-sans" {...props} />;
         },
-        p: ({ node, ...props }: any) => <p className="mb-4 leading-relaxed text-gray-300" {...props} />,
-        ul: ({ node, ...props }: any) => <ul className="space-y-2 mb-6 text-gray-300 list-disc ml-5 marker:text-blue-500" {...props} />,
-        ol: ({ node, ...props }: any) => <ol className="space-y-2 mb-6 text-gray-300 list-decimal ml-5 marker:text-blue-500 font-semibold" {...props} />,
-        li: ({ node, ...props }: any) => <li className="pl-1" {...props} />,
-        code: ({ node, className, ...props }: any) => {
+        p: ({ node, ...props }: React.ComponentPropsWithoutRef<'p'> & { node?: unknown }) => <p className="mb-4 leading-relaxed text-gray-300" {...props} />,
+        ul: ({ node, ...props }: React.ComponentPropsWithoutRef<'ul'> & { node?: unknown }) => <ul className="space-y-2 mb-6 text-gray-300 list-disc ml-5 marker:text-blue-500" {...props} />,
+        ol: ({ node, ...props }: React.ComponentPropsWithoutRef<'ol'> & { node?: unknown }) => <ol className="space-y-2 mb-6 text-gray-300 list-decimal ml-5 marker:text-blue-500 font-semibold" {...props} />,
+        li: ({ node, ...props }: React.ComponentPropsWithoutRef<'li'> & { node?: unknown }) => <li className="pl-1" {...props} />,
+        code: ({ node, className, ...props }: React.ComponentPropsWithoutRef<'code'> & { node?: unknown }) => {
             const isInline = !className;
             return isInline ?
                 <code className="bg-white/10 text-gray-300 px-1.5 py-0.5 rounded text-xs font-medium font-mono" {...props} /> :
                 <code className="block bg-white/5 p-4 rounded-xl text-sm overflow-x-auto whitespace-pre my-4 font-mono text-gray-300 border border-white/5" {...props} />;
         },
-        strong: ({ node, ...props }: any) => <strong className="font-semibold text-white" {...props} />
+        strong: ({ node, ...props }: React.ComponentPropsWithoutRef<'strong'> & { node?: unknown }) => <strong className="font-semibold text-white" {...props} />
     };
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     return (
         <div className="min-h-screen bg-[#13111C] flex text-gray-100 font-sans">
@@ -122,7 +126,7 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 bg-[#0B0A0F]">
-                <DashboardTopNav user={user as any} rightContent={
+                <DashboardTopNav user={user} rightContent={
                     <Link href="/dashboard/products" className="text-gray-400 hover:text-white transition-colors text-sm font-medium mr-2">
                         Close Product
                     </Link>
@@ -182,14 +186,15 @@ export default function ProductDetailDashboard({ user, product }: { user: UserDa
 
                         {activeTab === 'images' && (
                             <div className="animate-in fade-in duration-300">
-                                <h2 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Image Generation Prompts</h2>
-                                {product.imagePrompts ? (
-                                    <div className="text-gray-300">
-                                        <ReactMarkdown components={markdownComponents}>{product.imagePrompts}</ReactMarkdown>
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-500 italic">No image prompts generated for this product.</p>
-                                )}
+                                <ImagePrompts
+                                    productId={product.id}
+                                    existingPrompts={product.imagePrompts}
+                                    credits={user.credits}
+                                    onPromptsComplete={() => {
+                                        // Product is typically refreshed on page load, 
+                                        // but we can let them know it saved
+                                    }}
+                                />
                             </div>
                         )}
 

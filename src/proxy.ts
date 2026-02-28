@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
             const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-key-for-development-only');
             const { payload: decoded } = await jwtVerify(sessionCookie.value, secret);
             payload = decoded as { userId: string; role?: string };
-        } catch (error) {
+        } catch {
             // Invalid token
             if (isProtectedRoute) {
                 const response = NextResponse.redirect(new URL('/login', request.url));

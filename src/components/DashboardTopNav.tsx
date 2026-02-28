@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 interface UserData {
     email: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export default function DashboardTopNav({ user, children, rightContent }: { user?: UserData, children?: React.ReactNode, rightContent?: React.ReactNode }) {
@@ -32,11 +32,6 @@ export default function DashboardTopNav({ user, children, rightContent }: { user
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
-
-    const toggleTheme = () => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
-        // If we had a real theme provider, we'd call it here.
-    };
 
     const handleLogout = async () => {
         try {

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Package, ShieldAlert, Trash2, Loader2, Calendar, User } from 'lucide-react';
-import Link from 'next/link';
 
 interface AdminProduct {
     id: string;
@@ -29,8 +28,10 @@ export default function AdminProductsPage() {
             if (!res.ok) throw new Error('Failed to load products');
             const data = await res.json();
             setProducts(data.products);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -48,8 +49,10 @@ export default function AdminProductsPage() {
             if (!res.ok) throw new Error('Failed to delete product');
 
             setProducts(products.filter(p => p.id !== productId));
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                alert(err.message);
+            }
         } finally {
             setDeletingId(null);
         }

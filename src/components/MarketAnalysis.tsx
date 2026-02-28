@@ -114,6 +114,7 @@ export default function MarketAnalysis({ productId, onAnalysisComplete, existing
                         className="prose prose-blue max-w-none w-full"
                     >
                         <div className="bg-[#13111C] p-8 rounded-2xl border border-white/5 max-h-[600px] overflow-y-auto font-sans text-gray-200 leading-relaxed custom-scrollbar shadow-inner">
+                            {/* eslint-disable @typescript-eslint/no-unused-vars */}
                             <ReactMarkdown
                                 components={{
                                     h1: ({ node, ...props }) => <h1 className="text-2xl font-bold text-white mt-8 mb-4 border-b border-white/10 pb-2" {...props} />,

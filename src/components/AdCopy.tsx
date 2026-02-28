@@ -153,45 +153,50 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
                         className="grid grid-cols-1 md:grid-cols-2 gap-6"
                     >
                         {parsedAds.length > 0 ? (
-                            parsedAds.map((ad: any) => (
-                                <div key={ad.id} className="bg-[#13111C] border border-white/5 shadow-inner rounded-2xl overflow-hidden hover:border-blue-500/30 transition-colors flex flex-col">
-                                    <div className="bg-[#181622]/30 px-5 py-4 border-b border-white/5 flex justify-between items-center">
-                                        <span className="font-semibold text-white text-sm">
-                                            {ad.title}
-                                        </span>
-                                        <button
-                                            onClick={() => handleCopy(ad.raw, ad.id)}
-                                            className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10"
-                                        >
-                                            {copiedId === ad.id ? <CheckCircle2 size={14} className="text-green-500" /> : <Copy size={14} />}
-                                            {copiedId === ad.id ? 'Copied' : 'Copy'}
-                                        </button>
-                                    </div>
-                                    <div className="p-6 flex-grow text-sm flex flex-col gap-4">
-                                        <div>
-                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Primary Text</span>
-                                            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{ad.primaryText}</p>
+                            parsedAds.map((ad: { id: string, title: string, primaryText: string, headline: string, description: string, cta: string, raw: string } | null) => (
+                                ad && (
+                                    <div key={ad.id} className="bg-[#13111C] border border-white/5 shadow-inner rounded-2xl overflow-hidden hover:border-blue-500/30 transition-colors flex flex-col">
+                                        <div className="bg-[#181622]/30 px-5 py-4 border-b border-white/5 flex justify-between items-center">
+                                            <span className="font-semibold text-white text-sm">
+                                                {ad.title}
+                                            </span>
+                                            <button
+                                                onClick={() => handleCopy(ad.raw, ad.id)}
+                                                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-medium bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10"
+                                            >
+                                                {copiedId === ad.id ? <CheckCircle2 size={14} className="text-green-500" /> : <Copy size={14} />}
+                                                {copiedId === ad.id ? 'Copied' : 'Copy'}
+                                            </button>
                                         </div>
-                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5 mt-auto">
-                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Headline</span>
-                                            <p className="font-semibold text-white mb-4 text-base">{ad.headline}</p>
+                                        <div className="p-6 flex-grow text-sm flex flex-col gap-4">
+                                            <div>
+                                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Primary Text</span>
+                                                <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{ad.primaryText}</p>
+                                            </div>
+                                            <div className="bg-white/5 p-4 rounded-xl border border-white/5 mt-auto">
+                                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Headline</span>
+                                                <p className="font-semibold text-white mb-4 text-base">{ad.headline}</p>
 
-                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Description</span>
-                                            <p className="text-gray-400 mb-4">{ad.description}</p>
+                                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Description</span>
+                                                <p className="text-gray-400 mb-4">{ad.description}</p>
 
-                                            <div className="mt-2 inline-block bg-blue-500/10 text-blue-400 font-medium px-4 py-1.5 rounded-lg border border-blue-500/20 text-xs shadow-sm">
-                                                CTA: {ad.cta}
+                                                <div className="mt-2 inline-block bg-blue-500/10 text-blue-400 font-medium px-4 py-1.5 rounded-lg border border-blue-500/20 text-xs shadow-sm">
+                                                    CTA: {ad.cta}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                )
                             ))
                         ) : (
                             <div className="col-span-1 md:col-span-2 bg-[#13111C] p-8 rounded-2xl border border-white/5 font-sans text-gray-200 text-sm leading-relaxed custom-scrollbar max-h-[600px] overflow-y-auto shadow-inner">
                                 <ReactMarkdown
                                     components={{
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         h1: ({ node, ...props }) => <h1 className="text-xl font-bold text-white mt-6 mb-3 border-b border-white/10 pb-2" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         h2: ({ node, ...props }) => <h2 className="text-lg font-bold text-white mt-6 mb-3" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         h3: ({ node, ...props }) => {
                                             const text = String(props.children);
                                             const match = text.match(/^(\d+)\.?\s+(.*)$/);
@@ -207,13 +212,21 @@ export default function AdCopy({ productId, onAdCopyComplete, existingAdCopy }: 
                                             }
                                             return <h3 className="text-base font-semibold text-white mt-5 mb-2" {...props} />;
                                         },
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         h4: ({ node, ...props }) => <h4 className="font-semibold text-gray-200 mt-4 mb-2" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         ul: ({ node, ...props }) => <ul className="list-disc pl-5 space-y-1 mb-4 text-gray-300 marker:text-gray-500" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         ol: ({ node, ...props }) => <ol className="list-decimal pl-5 space-y-1 mb-4 text-gray-300 marker:text-gray-500" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         p: ({ node, ...props }) => <p className="mb-3 leading-relaxed" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-blue-500 pl-3 italic text-gray-400 my-3" {...props} />,
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                         code: ({ node, className, ...props }) => {
                                             const isInline = !className;
                                             return isInline ?

@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const session = await getSession();
         if (!session || session.role !== 'ADMIN') {
@@ -48,7 +48,7 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
         }
 
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (typeof credits === 'number') updateData.credits = credits;
         if (role === 'USER' || role === 'ADMIN') updateData.role = role;
 

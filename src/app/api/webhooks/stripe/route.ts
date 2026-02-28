@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
+import Stripe from 'stripe';
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -14,12 +15,15 @@ export async function POST(req: Request) {
             signature,
             process.env.STRIPE_WEBHOOK_SECRET!
         );
-    } catch (err: any) {
-        return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+        }
+        return new NextResponse(`Webhook Error`, { status: 400 });
     }
 
     if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as any;
+        const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
         const creditsStr = session.metadata?.credits;
 

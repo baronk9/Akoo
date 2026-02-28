@@ -216,7 +216,15 @@ THE GPT MUST NEVER:
         const result = streamText({
             model: google('gemini-2.5-pro'),
             system: systemPrompt,
-            prompt: `Here is the product information:\n\n${product.rawText}`,
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: `Here is the product information:\n\n${product.rawText}` },
+                        ...(product.imageBase64 ? [{ type: 'image' as const, image: product.imageBase64 }] : [])
+                    ]
+                }
+            ],
             onFinish: async ({ text }) => {
                 // Save the result to the database when complete
                 try {

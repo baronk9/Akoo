@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, CheckCircle2, ChevronDown, LayoutDashboard, Target, Zap, Layout, MonitorSmartphone, Settings, Star, Layers, Search, MousePointerClick } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, ChevronDown, LayoutDashboard, Target, Zap, Layout, Settings, Star, Layers, MousePointerClick } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('Founders');
@@ -68,6 +68,7 @@ export default function Home() {
           <div className="flex -space-x-3">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="w-10 h-10 rounded-full border-2 border-[#0B0A0F] bg-gray-800 flex items-center justify-center overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}&backgroundColor=1A1823`} alt="User" />
               </div>
             ))}
@@ -122,6 +123,7 @@ export default function Home() {
 
             {/* Floating Avatar overlay (from reference image) */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border-4 border-[#13111C] shadow-2xl overflow-hidden bg-gray-800 hidden md:block z-20">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" className="w-full h-full object-cover" alt="Happy User" />
             </div>
           </div>
@@ -273,7 +275,7 @@ export default function Home() {
               <div className="flex gap-1 text-yellow-500 mb-3">
                 {[...Array(t.stars)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
               </div>
-              <p className="text-sm text-gray-300 mb-6 italic">"{t.text}"</p>
+              <p className="text-sm text-gray-300 mb-6 italic">&quot;{t.text}&quot;</p>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-xs font-bold font-white">
                   {t.name[0]}
@@ -314,7 +316,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-4 mb-32 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold mb-4">Why Floee AI is Unique</h2>
-          <p className="text-gray-400">We don't just provide chatbots. We construct entire strategic workflows.</p>
+          <p className="text-gray-400">We don&apos;t just provide chatbots. We construct entire strategic workflows.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

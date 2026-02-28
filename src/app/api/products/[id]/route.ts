@@ -38,17 +38,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { name, marketAnalysis, productPageContent, imagePrompts, adCopy } = await req.json();
+        const { name, marketAnalysis, productPageContent, imagePrompts, adCopy, generatedImages } = await req.json();
 
         const resolvedParams = await params;
 
         // Build the update data dynamically based on what was provided
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
         if (marketAnalysis !== undefined) updateData.marketAnalysis = marketAnalysis;
         if (productPageContent !== undefined) updateData.productPageContent = productPageContent;
         if (imagePrompts !== undefined) updateData.imagePrompts = imagePrompts;
         if (adCopy !== undefined) updateData.adCopy = adCopy;
+        if (generatedImages !== undefined) updateData.generatedImages = generatedImages;
 
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json({ error: 'No data provided to update' }, { status: 400 });

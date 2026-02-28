@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 const secretKey = process.env.JWT_SECRET || 'super-secret-key-for-development-only';
 const key = new TextEncoder().encode(secretKey);
 
-export async function signToken(payload: any) {
+export async function signToken(payload: Record<string, unknown>) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
@@ -18,7 +18,7 @@ export async function verifyToken(token: string) {
             algorithms: ['HS256'],
         });
         return payload;
-    } catch (error) {
+    } catch {
         return null;
     }
 }
